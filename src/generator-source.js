@@ -1,27 +1,32 @@
-const test = () => {
-    console.log("test");
-};
+const { climateMock } = require('./climate-mock');
 
-function* numberGenerator() {
+function delayedValue(time, value) {
+    return new Promise((resolve /*, reject*/) => {
+        setTimeout(() => resolve(value), time);
+    });
+}
+
+async function* numberGenerator() {
     let i = 1;
-    while (true) {
-        yield i++;
+    let x = 1;
+    while (x < 10) {
+        yield delayedValue(1000, i++);
         if (i > 10) {
             i = 1;
+            x++;
         }
     }
 }
 
-const generator = numberGenerator();
-
-const intervalId = setInterval(() => {
-    const result = generator.next();
-    if (!result.done) {
-        console.log(result.value);
-    } else {
-        clearInterval(intervalId);
-        console.log("Generator is done.");
+async function* climateGenerator() {
+    while (true) {
+        //console.log(climateMock());
+        yield delayedValue(1000, climateMock());
     }
-}, 1000);
+}
 
-module.exports = { numberGenerator };
+
+
+module.exports = {
+    numberGenerator, climateGenerator
+};
